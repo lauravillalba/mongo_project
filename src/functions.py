@@ -49,3 +49,29 @@ def procesaIndices(fila):
         "contaminación":float((m[8].text).replace(',','.')),
         "clima":float((m[9].text).replace(',','.'))
     }
+
+#---------------------------- GooglePlace Request -----------------------------
+
+import os
+from dotenv import load_dotenv
+load_dotenv('src/.env')
+
+def requestGooglePlace(place):
+    token = os.getenv("API_GOOGLE_KEY")
+    #print(token)
+    if not token:
+        raise ValueError("Necesitas un API_GOOGLE_KEY")
+    
+    baseUrl = "https://maps.googleapis.com/"
+    endpoint="maps/api/place/textsearch/json"
+    url = baseUrl+endpoint
+    print(f"Requesting data from {url}")
+    params = {
+        "query":f"{place}",
+        "key": f"{token}"
+    }
+    res = requests.get(url,params=params)
+    if res.status_code != 200:
+        print(res.text)
+        raise ValueError("Bad Response")
+    return res.json()
